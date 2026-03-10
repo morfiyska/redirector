@@ -1,33 +1,49 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirecting...</title>
 
-    <script>
-        async function redirect() {
-            try {
-                const res = await fetch("config.json?t=" + Date.now());
-                const data = await res.json();
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-                if(data.url){
-                    window.location.replace(data.url);
-                } else {
-                    document.body.innerHTML = "URL не задан";
-                }
+<title>Redirecting...</title>
 
-            } catch(e){
-                document.body.innerHTML = "Ошибка загрузки";
-            }
+<script>
+
+    async function redirect(){
+    
+        const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRKQbKeOxyOQqEg_x2FkKtwtA8e4E0lHAyMSV1DU5gA36nm88sLinzzTlGsjm1aD08lz9dDYpKVKzvC/pub?gid=0&single=true&output=csv";
+        
+        const res = await fetch(csvUrl + "&t=" + Date.now());
+        const text = await res.text();
+        
+        const rows = text.trim().split("\n");
+    
+        if(rows.length < 2){
+            document.body.innerHTML = "No URL in sheet";
+            return;
+        }
+    
+        const cols = rows[1].split(",");
+    
+        const url = cols[1];
+    
+        if(url){
+            window.location.replace(url);
+        }else{
+            document.body.innerHTML = "URL empty";
         }
 
-        redirect();
-    </script>
+    }
+
+    redirect();
+
+</script>
 
 </head>
 
-<body style="font-family:sans-serif;text-align:center;margin-top:20vh;">
-    <h2>Redirecting...</h2>
+<body style="font-family:sans-serif;text-align:center;margin-top:20vh">
+
+<h2>Redirecting...</h2>
+
 </body>
 </html>
