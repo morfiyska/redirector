@@ -11,7 +11,7 @@
 
     async function redirect(){
     
-        const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRKQbKeOxyOQqEg_x2FkKtwtA8e4E0lHAyMSV1DU5gA36nm88sLinzzTlGsjm1aD08lz9dDYpKVKzvC/pub?gid=0&single=true&output=csv";
+        const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRKQbKeOxyOQqEg_x2FkKtwtA8e4E0lHAyMSV1DU5gA36nm88sLinzzTlGsjm1aD08lz9dDYpKVKzvC/pub?output=csv";
         
         const res = await fetch(csvUrl + "&t=" + Date.now());
         const text = await res.text();
