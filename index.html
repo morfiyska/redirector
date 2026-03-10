@@ -17,15 +17,10 @@
         const text = await res.text();
         
         const rows = text.trim().split("\n");
-    
-        if(rows.length < 2){
-            document.body.innerHTML = "No URL in sheet";
-            return;
-        }
-    
-        const cols = rows[1].split(",");
-    
-        const url = cols[1];
+
+        const last = rows[rows.length-1];
+        
+        const url = last.split(",")[1];
     
         if(url){
             window.location.replace(url);
