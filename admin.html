@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>URL Manager</title>
+<title>Admin</title>
 
 <style>
 
@@ -50,30 +50,107 @@ font-size:16px;
 cursor:pointer;
 }
 
+.hidden{
+display:none;
+}
+
 </style>
+
 </head>
 
 <body>
 
-<div class="box">
+<!-- LOGIN -->
+
+<div class="box" id="loginBox">
+
+<h2>Admin Login</h2>
+
+<form onsubmit="login(event)">
+
+<input id="login" placeholder="Login" autocomplete="username">
+
+<input id="password" type="password" placeholder="Password" autocomplete="current-password">
+
+<button type="submit">Login</button>
+
+</form>
+
+<p id="loginStatus"></p>
+
+</div>
+
+
+<!-- ADMIN PANEL -->
+
+<div class="box hidden" id="adminBox">
 
 <h2>URL Redirect Manager</h2>
 
 <input id="url" placeholder="https://example.com">
 
-<button onclick="paste()">📋 Вставить из буфера</button>
+<button onclick="paste()">📋 Paste</button>
 
-<button onclick="save()">💾 Сохранить</button>
+<button onclick="save()">💾 Save</button>
 
 <p id="status"></p>
 
 </div>
 
+
 <script>
 
+const authCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQrgA2w-nUqD7SOjZFZWDPiFcZ4G0l6d8eM9uYdxD7MeAZ6lB9Ijpn0wJAgNEoTwGGqRMEx-EkwKvTC/pub?output=csv";
+
+async function login(e){
+
+e.preventDefault();
+
+const loginInput = document.getElementById("login").value;
+const passInput = document.getElementById("password").value;
+
+const res = await fetch(authCSV + "&t=" + Date.now());
+const text = await res.text();
+
+const row = text.trim().split("\n")[0];
+
+const parts = row.split(",");
+
+const login = parts[0];
+const pass = parts[1];
+
+if(loginInput === login && passInput === pass){
+
+localStorage.setItem("adminAuth","1");
+
+showAdmin();
+
+}else{
+
+document.getElementById("loginStatus").innerText="Invalid login";
+
+}
+
+}
+
+function showAdmin(){
+
+document.getElementById("loginBox").classList.add("hidden");
+document.getElementById("adminBox").classList.remove("hidden");
+
+}
+
+if(localStorage.getItem("adminAuth")){
+
+showAdmin();
+
+}
+
 async function paste(){
+
 const text = await navigator.clipboard.readText();
 document.getElementById("url").value = text;
+
 }
 
 async function save(){
@@ -92,7 +169,7 @@ body:`entry.1579941584=${encodeURIComponent(url)}`
 }
 );
 
-document.getElementById("status").innerText="Saved to Google Sheets";
+document.getElementById("status").innerText="Saved";
 
 }
 
