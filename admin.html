@@ -102,24 +102,45 @@ display:none;
 
 const authCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQrgA2w-nUqD7SOjZFZWDPiFcZ4G0l6d8eM9uYdxD7MeAZ6lB9Ijpn0wJAgNEoTwGGqRMEx-EkwKvTC/pub?output=csv";
 
+console.log("Admin script loaded");
+
 async function login(e){
+
+console.log("Login button pressed");
 
 e.preventDefault();
 
 const loginInput = document.getElementById("login").value;
 const passInput = document.getElementById("password").value;
 
+console.log("User entered:", loginInput);
+
+try{
+
+console.log("Fetching auth CSV...");
+
 const res = await fetch(authCSV + "&t=" + Date.now());
+
+console.log("Fetch response:", res);
+
 const text = await res.text();
 
+console.log("CSV content:", text);
+
 const row = text.trim().split("\n")[0];
+
+console.log("Parsed row:", row);
 
 const parts = row.split(",");
 
 const login = parts[0];
 const pass = parts[1];
 
+console.log("Expected login:", login);
+
 if(loginInput === login && passInput === pass){
+
+console.log("Login success");
 
 localStorage.setItem("adminAuth","1");
 
@@ -127,13 +148,31 @@ showAdmin();
 
 }else{
 
-document.getElementById("loginStatus").innerText="Invalid login";
+console.warn("Login failed");
+
+const el = document.getElementById("loginStatus");
+
+el.innerText="❌ Неверный логин или пароль";
+el.style.color="red";
+
+}
+
+}catch(err){
+
+console.error("Auth error:", err);
+
+const el = document.getElementById("loginStatus");
+
+el.innerText="⚠ Ошибка загрузки авторизации";
+el.style.color="red";
 
 }
 
 }
 
 function showAdmin(){
+
+console.log("Showing admin panel");
 
 document.getElementById("loginBox").classList.add("hidden");
 document.getElementById("adminBox").classList.remove("hidden");
@@ -142,20 +181,41 @@ document.getElementById("adminBox").classList.remove("hidden");
 
 if(localStorage.getItem("adminAuth")){
 
+console.log("Already authorized");
+
 showAdmin();
 
 }
 
 async function paste(){
 
+console.log("Paste button clicked");
+
+try{
+
 const text = await navigator.clipboard.readText();
+
+console.log("Clipboard content:", text);
+
 document.getElementById("url").value = text;
+
+}catch(err){
+
+console.error("Clipboard error:", err);
+
+}
 
 }
 
 async function save(){
 
+console.log("Save button clicked");
+
 const url = document.getElementById("url").value;
+
+console.log("Saving URL:", url);
+
+try{
 
 await fetch(
 "https://docs.google.com/forms/u/0/d/e/1FAIpQLSfL4qKW7pzWmLJURy46AUi7HwJQ_Vd_wm4Dc6anvpzq_C82Ow/formResponse",
@@ -169,7 +229,17 @@ body:`entry.1579941584=${encodeURIComponent(url)}`
 }
 );
 
+console.log("Form submitted");
+
 document.getElementById("status").innerText="Saved";
+
+}catch(err){
+
+console.error("Save error:", err);
+
+document.getElementById("status").innerText="Error saving";
+
+}
 
 }
 
