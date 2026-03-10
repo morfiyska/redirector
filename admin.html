@@ -1,112 +1,102 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>URL Manager</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-    *{
-        box-sizing:border-box;
-    }
-    
-    body{
-        font-family:system-ui;
-        background:#0f172a;
-        color:white;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        height:100vh;
-        margin:0;
-    }
-    
-    .box{
-        background:#1e293b;
-        padding:30px;
-        border-radius:12px;
-        width:90%;
-        max-width:400px;
-    }
-    
-    input{
-        width:100%;
-        padding:12px;
-        border-radius:8px;
-        border:none;
-        margin-top:10px;
-    }
-    
-    button{
-        margin-top:10px;
-        width:100%;
-        padding:12px;
-        border:none;
-        border-radius:8px;
-        background:#3b82f6;
-        color:white;
-        font-size:16px;
-        cursor:pointer;
-    }
-    </style>
+<title>URL Manager</title>
+
+<style>
+
+*{box-sizing:border-box;}
+
+body{
+font-family:system-ui;
+background:#0f172a;
+color:white;
+display:flex;
+align-items:center;
+justify-content:center;
+height:100vh;
+margin:0;
+}
+
+.box{
+background:#1e293b;
+padding:30px;
+border-radius:12px;
+width:90%;
+max-width:400px;
+}
+
+input{
+width:100%;
+padding:12px;
+border-radius:8px;
+border:none;
+margin-top:10px;
+}
+
+button{
+margin-top:10px;
+width:100%;
+padding:12px;
+border:none;
+border-radius:8px;
+background:#3b82f6;
+color:white;
+font-size:16px;
+cursor:pointer;
+}
+
+</style>
 </head>
 
 <body>
 
-    <div class="box">
+<div class="box">
 
-        <h2>URL Redirect Manager</h2>
+<h2>URL Redirect Manager</h2>
 
-        <input id="url" placeholder="https://example.com">
+<input id="url" placeholder="https://example.com">
 
-        <button onclick="paste()">📋 Вставить из буфера</button>
+<button onclick="paste()">📋 Вставить из буфера</button>
 
-        <button onclick="save()">💾 Сохранить</button>
+<button onclick="save()">💾 Сохранить</button>
 
-        <p id="status"></p>
+<p id="status"></p>
 
-    </div>
+</div>
 
-    <script>async function paste(){
-        const text = await navigator.clipboard.readText();
-                document.getElementById("url").value = text;
-            }
+<script>
 
-        async function save(){
+async function paste(){
+const text = await navigator.clipboard.readText();
+document.getElementById("url").value = text;
+}
 
-            const url = document.getElementById("url").value;
+async function save(){
 
-            const content = JSON.stringify({url:url}, null, 2);
-            const base64 = btoa(content);
+const url = document.getElementById("url").value;
 
-            const repo = "USERNAME/REPO";
-            const path = "config.json";
-            const token = "GITHUB_TOKEN";
+await fetch(
+"https://docs.google.com/forms/u/0/d/e/1FAIpQLSfL4qKW7pzWmLJURy46AUi7HwJQ_Vd_wm4Dc6anvpzq_C82Ow/formResponse",
+{
+method:"POST",
+mode:"no-cors",
+headers:{
+"Content-Type":"application/x-www-form-urlencoded"
+},
+body:`entry.1579941584=${encodeURIComponent(url)}`
+}
+);
 
-            let sha;
+document.getElementById("status").innerText="Saved to Google Sheets";
 
-            const get = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`);
+}
 
-            const data = await get.json();
-            sha = data.sha;
-
-            await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
-                method:"PUT",
-                headers:{
-                "Authorization":"token "+token,
-                "Content-Type":"application/json"
-                },
-                body:JSON.stringify({
-                    message:"update url",
-                    content:base64,
-                    sha:sha
-                })
-            });
-
-            document.getElementById("status").innerText="Saved!";
-        }
-    </script>
+</script>
 
 </body>
 </html>
