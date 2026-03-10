@@ -1,0 +1,107 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>URL Manager</title>
+
+    <style>
+
+        body {
+            font-family: system-ui;
+            background: #0f172a;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .box {
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            margin-top: 10px;
+        }
+
+        button {
+            margin-top: 10px;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #3b82f6;
+            color: white;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="box">
+
+        <h2>URL Redirect Manager</h2>
+
+        <input id="url" placeholder="https://example.com">
+
+        <button onclick="paste()">📋 Вставить из буфера</button>
+
+        <button onclick="save()">💾 Сохранить</button>
+
+        <p id="status"></p>
+
+    </div>
+
+    <script>async function paste(){
+        const text = await navigator.clipboard.readText();
+                document.getElementById("url").value = text;
+            }
+
+        async function save(){
+
+            const url = document.getElementById("url").value;
+
+            const content = JSON.stringify({url:url}, null, 2);
+            const base64 = btoa(content);
+
+            const repo = "USERNAME/REPO";
+            const path = "config.json";
+            const token = "GITHUB_TOKEN";
+
+            let sha;
+
+            const get = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`);
+
+            const data = await get.json();
+            sha = data.sha;
+
+            await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+                method:"PUT",
+                headers:{
+                "Authorization":"token "+token,
+                "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                    message:"update url",
+                    content:base64,
+                    sha:sha
+                })
+            });
+
+            document.getElementById("status").innerText="Saved!";
+        }
+    </script>
+
+</body>
+</html>

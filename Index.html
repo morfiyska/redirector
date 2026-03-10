@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting...</title>
+
+    <script>
+        async function redirect() {
+            try {
+                const res = await fetch("config.json?t=" + Date.now());
+                const data = await res.json();
+
+                if(data.url){
+                    window.location.replace(data.url);
+                } else {
+                    document.body.innerHTML = "URL не задан";
+                }
+
+            } catch(e){
+                document.body.innerHTML = "Ошибка загрузки";
+            }
+        }
+
+        redirect();
+    </script>
+
+</head>
+
+<body style="font-family:sans-serif;text-align:center;margin-top:20vh;">
+    <h2>Redirecting...</h2>
+</body>
+</html>
